@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  semesters Semester[]
+}
+
+model Semester {
+  id        String   @id @default(uuid())
+  name      String   // e.g., "Fall 2023"
+  startDate DateTime
+  endDate   DateTime
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  subjects  Subject[]
+  holidays  Holiday[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subject {
+  id             String   @id @default(uuid())
+  name           String
+  code           String?  // e.g., "CS101"
+  color          String?  // For UI (hex code)
+  semesterId     String
+  semester       Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+
+  // Schedule definition (JSON for flexibility, or structured if preferred)
+  // Storing as JSON: [{ day: "Monday", startTime: "10:00", endTime: "11:00" }, ...]
+  schedule       Json     
+
+  // Target attendance percentage (default 75)
+  targetPercentage Float @default(75.0)
+
+  sessions       ClassSession[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model ClassSession {
+  id        String   @id @default(uuid())
+  date      DateTime
+  startTime DateTime // Full date-time or just time part stored as date
+  endTime   DateTime
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  status    SessionStatus @default(PENDING)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subjectId])
+  @@index([date])
+}
+
+enum SessionStatus {
+  PENDING
+  ATTENDED
+  SKIPPED
+  CANCELLED // If the professor cancelled the class
+}
+
+model Holiday {
+  id         String   @id @default(uuid())
+  name       String
+  date       DateTime
+  semesterId String
+  semester   Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+}

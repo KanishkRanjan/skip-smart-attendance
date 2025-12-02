@@ -1,11 +1,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'https://skip-smart-attendance.onrender.com'),
     headers: {
         'Content-Type': 'application/json',
     },
 });
+
+console.log('API Base URL:', api.defaults.baseURL);
 
 // Add a request interceptor to include the token
 api.interceptors.request.use(

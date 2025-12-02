@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,72 +8,59 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   password  String
   name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   semesters Semester[]
 }
 
 model Semester {
-  id        String   @id @default(uuid())
-  name      String   // e.g., "Fall 2023"
+  id        String    @id @default(uuid())
+  name      String
   startDate DateTime
   endDate   DateTime
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  subjects  Subject[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   holidays  Holiday[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects  Subject[]
+
+  @@index([userId], map: "Semester_userId_fkey")
 }
 
 model Subject {
-  id             String   @id @default(uuid())
-  name           String
-  code           String?  // e.g., "CS101"
-  color          String?  // For UI (hex code)
-  semesterId     String
-  semester       Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  id               String         @id @default(uuid())
+  name             String
+  code             String?
+  color            String?
+  semesterId       String
+  schedule         Json
+  targetPercentage Float          @default(75)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  sessions         ClassSession[]
+  semester         Semester       @relation(fields: [semesterId], references: [id], onDelete: Cascade)
 
-  // Schedule definition (JSON for flexibility, or structured if preferred)
-  // Storing as JSON: [{ day: "Monday", startTime: "10:00", endTime: "11:00" }, ...]
-  schedule       Json     
-
-  // Target attendance percentage (default 75)
-  targetPercentage Float @default(75.0)
-
-  sessions       ClassSession[]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  @@index([semesterId], map: "Subject_semesterId_fkey")
 }
 
 model ClassSession {
-  id        String   @id @default(uuid())
+  id        String        @id @default(uuid())
   date      DateTime
-  startTime DateTime // Full date-time or just time part stored as date
+  startTime DateTime
   endTime   DateTime
   subjectId String
-  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-
   status    SessionStatus @default(PENDING)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  subject   Subject       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
   @@index([subjectId])
   @@index([date])
-}
-
-enum SessionStatus {
-  PENDING
-  ATTENDED
-  SKIPPED
-  CANCELLED // If the professor cancelled the class
 }
 
 model Holiday {
@@ -85,4 +69,13 @@ model Holiday {
   date       DateTime
   semesterId String
   semester   Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+
+  @@index([semesterId], map: "Holiday_semesterId_fkey")
+}
+
+enum SessionStatus {
+  PENDING
+  ATTENDED
+  SKIPPED
+  CANCELLED
 }

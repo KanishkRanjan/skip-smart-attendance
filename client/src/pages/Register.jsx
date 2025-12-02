@@ -18,7 +18,8 @@ const Register = () => {
             login(res.data.token, res.data.user);
             navigate('/');
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to register');
+            console.error("Register Error:", err);
+            setError(err.response?.data?.message || err.message || 'Failed to register');
         }
     };
 

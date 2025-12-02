@@ -17,13 +17,8 @@ SkipSmart is a full-stack web application designed to help college students mana
 
 ## Setup Instructions
 
-### 1. Database Setup
-Start the MySQL database using Docker:
-```bash
-docker-compose up -d
-```
 
-### 2. Backend Setup
+### 1. Backend Setup
 Navigate to the server directory:
 ```bash
 cd server
@@ -48,7 +43,7 @@ npm run dev
 ```
 The server will run on `http://localhost:5000`.
 
-### 3. Frontend Setup
+### 2. Frontend Setup
 Open a new terminal and navigate to the client directory:
 ```bash
 cd client

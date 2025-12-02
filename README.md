@@ -2,9 +2,13 @@
 
 SkipSmart is a full-stack web application designed to help college students manage their attendance strategically. It tracks attendance, calculates safe skips, and provides suggestions to maintain a target percentage (default 75%).
 
+## Live Demo
+- **Frontend**: [https://skip-smart-attendance.vercel.app/](https://skip-smart-attendance.vercel.app/)
+- **Backend**: [https://skip-smart-attendance.onrender.com](https://skip-smart-attendance.onrender.com)
+
 ## Tech Stack
-- **Frontend**: React, TypeScript, Vite, Tailwind CSS
-- **Backend**: Node.js, Express, TypeScript, Prisma ORM
+- **Frontend**: React, JavaScript, Vite, Tailwind CSS
+- **Backend**: Node.js, Express, JavaScript, Prisma ORM
 - **Database**: MySQL
 
 ## Prerequisites
